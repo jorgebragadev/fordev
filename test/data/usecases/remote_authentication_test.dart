@@ -14,13 +14,18 @@ void main() {
   late RemoteAuthentication sut;
   late MockHttpClient httpClient;
   late String url;
+  late AuthenticationParams params;
 
   setUp(() {
     httpClient = MockHttpClient();
     url = faker.internet.httpUrl();
     sut = RemoteAuthentication(httpClient: httpClient, url: url);
+    params = AuthenticationParams(
+      email: faker.internet.email(),
+      password: faker.internet.password(),
+    );
 
-    // Configurar o mock para retornar um Future<void>
+  
     when(() => httpClient.request(
           url: any(named: 'url'),
           method: any(named: 'method'),
@@ -29,15 +34,9 @@ void main() {
   });
 
   test('Should call HttpClient with correct values', () async {
-    final params = AuthenticationParams(
-      email: faker.internet.email(),
-      password: faker.internet.password(),
-    );
 
-    // Chamar o método auth que deve acionar a request no HttpClient
     await sut.auth(params);
 
-    // Verificar se o HttpClient.request foi chamado corretamente
     verify(() => httpClient.request(
           url: url,
           method: 'post',
@@ -52,18 +51,13 @@ void main() {
           body: any(named: 'body'),
         )).thenThrow(HttpError.badRequest);
 
-    final params = AuthenticationParams(
-      email: faker.internet.email(),
-      password: faker.internet.password(),
-    );
-
-    // Chamar o método auth dentro do escopo do teste
+    
     final future = sut.auth(params);
 
-    // Verificar se o futuro lança a exceção esperada
+
     expect(
         future,
         throwsA(
-            DomainError.unexpected)); // Corrigido para DomainError.unexpected
+            DomainError.unexpected)); 
   });
 }
