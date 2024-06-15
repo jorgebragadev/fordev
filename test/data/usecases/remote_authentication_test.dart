@@ -1,32 +1,14 @@
 import 'package:faker/faker.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:fordev/data/http/http_client.dart';
+import 'package:fordev/data/remote_authentication.dart';
 import 'package:mocktail/mocktail.dart';
 
-// Importar as classes necessárias
+
 import 'package:fordev/domain/usecases/authentication.dart';
 
-// Classes e Interfaces
-abstract class HttpClient {
-  Future<void> request(
-      {required String url, required String method, Map? body});
-}
 
-class RemoteAuthentication {
-  final HttpClient httpClient;
-  final String url;
 
-  RemoteAuthentication({
-    required this.httpClient,
-    required this.url,
-  });
-
-  Future<void> auth(AuthenticationParams params) async {
-    final body = {'email': params.email, 'password': params.password};
-    await httpClient.request(url: url, method: 'post', body: body);
-  }
-}
-
-// Implementação do Mock usando Mocktail
 class MockHttpClient extends Mock implements HttpClient {}
 
 void main() {
