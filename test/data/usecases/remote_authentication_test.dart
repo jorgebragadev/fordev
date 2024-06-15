@@ -25,7 +25,6 @@ void main() {
       password: faker.internet.password(),
     );
 
-  
     when(() => httpClient.request(
           url: any(named: 'url'),
           method: any(named: 'method'),
@@ -34,7 +33,6 @@ void main() {
   });
 
   test('Should call HttpClient with correct values', () async {
-
     await sut.auth(params);
 
     verify(() => httpClient.request(
@@ -51,13 +49,20 @@ void main() {
           body: any(named: 'body'),
         )).thenThrow(HttpError.badRequest);
 
-    
     final future = sut.auth(params);
 
+    expect(future, throwsA(DomainError.unexpected));
+  });
 
-    expect(
-        future,
-        throwsA(
-            DomainError.unexpected)); 
+  test('Should throw UnexpectedError if HttpClient return 404', () async {
+    when(() => httpClient.request(
+          url: any(named: 'url'),
+          method: any(named: 'method'),
+          body: any(named: 'body'),
+        )).thenThrow(HttpError.notFound);
+
+    final future = sut.auth(params);
+
+    expect(future, throwsA(DomainError.unexpected));
   });
 }
