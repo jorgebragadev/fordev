@@ -1,5 +1,6 @@
 import 'package:fordev/data/http/http_client.dart';
-import 'package:fordev/domain/entities/account_entity.dart';
+import 'package:fordev/data/http/http_error.dart';
+import 'package:fordev/domain/helpers/domain_error.dart';
 import 'package:fordev/domain/usecases/authentication.dart';
 
 class RemoteAuthentication {
@@ -13,7 +14,11 @@ class RemoteAuthentication {
 
   Future<void> auth(AuthenticationParams params) async {
     final body = RemoteAuthenticationParams.fromDomain(params).toJson();
-    await httpClient.request(url: url, method: 'post', body: body);
+    try {
+      await httpClient.request(url: url, method: 'post', body: body);
+    } on HttpError {
+      throw DomainError.unexpected;
+    }
   }
 }
 
@@ -30,5 +35,8 @@ class RemoteAuthenticationParams {
       RemoteAuthenticationParams(
           email: params.email, password: params.password);
 
-  Map toJson() => {'email': email, 'params': password};
+  Map<String, dynamic> toJson() => {
+    'email': email,
+    'password': password,
+  };
 }
