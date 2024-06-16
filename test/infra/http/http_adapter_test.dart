@@ -34,12 +34,12 @@ class HttpAdapter {
 
 void main() {
   late HttpAdapter sut;
-  late MockClient mockClient;
+  late MockClient client;
   late String url;
 
   setUp(() {
-    mockClient = MockClient();
-    sut = HttpAdapter(mockClient);
+    client = MockClient();
+    sut = HttpAdapter(client);
     url = faker.internet.httpUrl();
   });
 
@@ -52,14 +52,14 @@ void main() {
       };
 
       // Simulando a resposta com uma Future<Response> válida
-      when(() => mockClient.post(Uri.parse(url), headers: headers))
+      when(() => client.post(Uri.parse(url), headers: headers))
           .thenAnswer((_) async => http.Response('{}', 200));
 
       // Chama o método que você está testando
       await sut.request(url: url, method: 'post');
 
       // Verifica se o método foi chamado com os parâmetros corretos
-      verify(() => mockClient.post(Uri.parse(url), headers: headers)).called(1);
+      verify(() => client.post(Uri.parse(url), headers: headers)).called(1);
     });
   });
 }
