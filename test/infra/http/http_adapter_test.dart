@@ -2,6 +2,7 @@ import 'package:faker/faker.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
+import 'dart:convert';
 
 class MockClient extends Mock implements http.Client {}
 
@@ -10,7 +11,8 @@ class HttpAdapter {
 
   HttpAdapter(this.client);
 
-  Future<void> request({required String url, required String method}) async {
+  Future<void> request(
+      {required String url, required String method, Map? body}) async {
     final headers = {
       'content-type': 'application/json',
       'accept': 'application/json'
@@ -18,7 +20,8 @@ class HttpAdapter {
     final uri = Uri.parse(url);
     if (method == 'post') {
       try {
-        final response = await client.post(uri, headers: headers);
+        final response =
+            await client.post(uri, headers: headers, body: json.encode(body));
         // Processar a resposta, se necessário
         print('Response status: ${response.statusCode}');
         print('Response body: ${response.body}');
@@ -36,11 +39,16 @@ void main() {
   late HttpAdapter sut;
   late MockClient client;
   late String url;
+  late Map<String, dynamic> body;
 
   setUp(() {
     client = MockClient();
     sut = HttpAdapter(client);
     url = faker.internet.httpUrl();
+    body = {
+      'email': faker.internet.email(),
+      'password': faker.internet.password(),
+    };
   });
 
   group('post', () {
@@ -52,14 +60,22 @@ void main() {
       };
 
       // Simulando a resposta com uma Future<Response> válida
-      when(() => client.post(Uri.parse(url), headers: headers))
+      when(() => client.post(Uri.parse(url),
+              headers: headers, body: any(named: 'body')))
           .thenAnswer((_) async => http.Response('{}', 200));
 
       // Chama o método que você está testando
-      await sut.request(url: url, method: 'post');
+      await sut.request(url: url, method: 'post', body: body);
 
       // Verifica se o método foi chamado com os parâmetros corretos
-      verify(() => client.post(Uri.parse(url), headers: headers)).called(1);
+      final captured = verify(() => client.post(
+            Uri.parse(url),
+            headers: headers,
+            body: captureAny(named: 'body'),
+          )).captured;
+
+      final capturedBody = captured.single as String;
+      expect(json.decode(capturedBody), body);
     });
   });
 }
