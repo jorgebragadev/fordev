@@ -1,42 +1,65 @@
 import 'package:faker/faker.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:http/http.dart';
-import 'package:mockito/mockito.dart';
+import 'package:http/http.dart' as http;
+import 'package:mocktail/mocktail.dart';
 
-class HttpAdpater {
-  final Client client;
+class MockClient extends Mock implements http.Client {}
 
-  HttpAdpater(this.client);
+class HttpAdapter {
+  final http.Client client;
 
-  Future<void> request({
-    required String url,
-    required String method,
-    Map<String, String>? headers,
-    dynamic body,
-  }) async {
+  HttpAdapter(this.client);
+
+  Future<void> request({required String url, required String method}) async {
+    final headers = {
+      'content-type': 'application/json',
+      'accept': 'application/json'
+    };
     final uri = Uri.parse(url);
     if (method == 'post') {
-      await client.post(uri, headers: headers, body: body);
+      try {
+        final response = await client.post(uri, headers: headers);
+        // Processar a resposta, se necessário
+        print('Response status: ${response.statusCode}');
+        print('Response body: ${response.body}');
+      } catch (e) {
+        print('Error during POST request: $e');
+        throw e; // Lançar exceção para indicar erro na requisição
+      }
+      return; // Retorna void após o processamento
     }
+    throw Exception('Unsupported method');
   }
 }
 
-class ClientSpy extends Mock implements Client {}
-
 void main() {
+  late HttpAdapter sut;
+  late MockClient mockClient;
+  late String url;
+
+  setUp(() {
+    mockClient = MockClient();
+    sut = HttpAdapter(mockClient);
+    url = faker.internet.httpUrl();
+  });
+
   group('post', () {
     test('Should call post with correct values', () async {
-      final client = ClientSpy();
-      final sut = HttpAdpater(client);
-      final url = faker.internet.httpUrl();
+      // Configuração do mocktail para post com resposta simulada
+      final headers = {
+        'content-type': 'application/json',
+        'accept': 'application/json'
+      };
 
+      // Simulando a resposta com uma Future<Response> válida
+      when(() => mockClient.post(Uri.parse(url), headers: headers))
+          .thenAnswer((_) async => http.Response('{}', 200));
+
+      // Chama o método que você está testando
       await sut.request(url: url, method: 'post');
 
-      verify(client.post(
-        Uri.parse(url),
-        headers: anyNamed('headers'),
-        body: anyNamed('body'),
-      ));
+      // Verifica se o método foi chamado com os parâmetros corretos
+      verify(() => mockClient.post(Uri.parse(url), headers: headers)).called(1);
     });
   });
 }
