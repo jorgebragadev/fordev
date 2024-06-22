@@ -36,6 +36,9 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.6
   http: ^1.2.1
+  mocktail: ^1.0.4
+  faker: ^2.1.0
+  
   
   
   
@@ -43,7 +46,13 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "lib/ui/assets/icon/android.png"
+
   mockito: ^5.4.4
   build_runner: ^2.4.11
   mocktail: ^1.0.4
