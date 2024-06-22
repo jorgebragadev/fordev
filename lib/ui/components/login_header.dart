@@ -21,10 +21,10 @@ class LoginHeader extends StatelessWidget {
         ),
         boxShadow: const [
           BoxShadow(
-            offset: Offset(0, 10),
-            spreadRadius: 0,
-            blurRadius: 4,
-            color: Colors.black,
+            offset: Offset(0, 4),
+            spreadRadius: 1,
+            blurRadius: 3,
+            color: Colors.grey,
           ),
         ],
         borderRadius: const BorderRadius.only(
