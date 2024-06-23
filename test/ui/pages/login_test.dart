@@ -13,28 +13,32 @@ void main() {
   late LoginPresenter presenter;
   late StreamController<String?> emailErrorController;
   late StreamController<String?> passwordErrorController;
+  late StreamController<String?> mainErrorController;
   late StreamController<bool> isFormValidController;
   late StreamController<bool> isLoadingController;
 
   Future<void> loadPage(WidgetTester tester) async {
     presenter = LoginPresenterSpy();
     emailErrorController =
-        StreamController<String?>(); // Defina o tipo do StreamController
+        StreamController<String?>(); 
     when(() => presenter.emailErrorStream)
         .thenAnswer((_) => emailErrorController.stream);
     passwordErrorController =
-        StreamController<String?>(); // Defina o tipo do StreamController
+        StreamController<String?>(); 
     when(() => presenter.passwordErrorStream)
         .thenAnswer((_) => passwordErrorController.stream);
+    mainErrorController =
+        StreamController<String?>(); 
+    when(() => presenter.mainErrorStream)
+        .thenAnswer((_) => mainErrorController.stream);
 
     isLoadingController = StreamController<bool>();
     when(() => presenter.isLoadingStream)
         .thenAnswer((_) => isLoadingController.stream);
 
-      isFormValidController = StreamController<bool>();
+    isFormValidController = StreamController<bool>();
     when(() => presenter.isFormValidStream)
         .thenAnswer((_) => isFormValidController.stream);
-
 
     final loginPage = MaterialApp(home: LoginPage(presenter));
     await tester.pumpWidget(loginPage);
@@ -51,6 +55,7 @@ void main() {
   tearDown(() {
     emailErrorController.close();
     passwordErrorController.close();
+    mainErrorController.close();
     isFormValidController.close();
     isLoadingController.close();
   });
@@ -75,7 +80,7 @@ void main() {
 
     final button = tester.widget<ElevatedButton>(find.byType(ElevatedButton));
     expect(button.onPressed, null);
-     expect(find.byType(CircularProgressIndicator), findsNothing);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
   });
 
   testWidgets('Should call validate with correct values',
@@ -213,5 +218,15 @@ void main() {
     await tester.pump();
 
     expect(find.byType(CircularProgressIndicator), findsNothing);
+  });
+
+  testWidgets('Should present error message if authentication fails',
+      (WidgetTester tester) async {
+    await loadPage(tester);
+
+    mainErrorController.add('main error');
+    await tester.pump();
+
+    expect(find.text('main error'), findsOneWidget);
   });
 }

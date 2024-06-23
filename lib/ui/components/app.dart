@@ -7,6 +7,7 @@ import 'dart:async';
 class FakeLoginPresenter extends LoginPresenter {
   final _emailErrorController = StreamController<String?>.broadcast();
   final _passwordErrorController = StreamController<String?>.broadcast();
+  final _mainErrorController = StreamController<String?>.broadcast();
   final _isFormValidStream = StreamController<bool>.broadcast();
   final _isFormValidController = StreamController<bool>.broadcast();
   final _isLoadingStream = StreamController<bool>.broadcast();
@@ -26,8 +27,10 @@ class FakeLoginPresenter extends LoginPresenter {
   void dispose() {
     _emailErrorController.close();
     _passwordErrorController.close();
+    _mainErrorController.close();
     _isFormValidStream.close();
     _isFormValidController.close();
+    
   }
 
   @override
@@ -40,8 +43,10 @@ class FakeLoginPresenter extends LoginPresenter {
   void auth() {}
   
   @override
-  // TODO: implement isLoadingStream
   Stream<bool> get isLoadingStream => throw UnimplementedError();
+  
+  @override
+  Stream<String?> get mainErrorStream => throw UnimplementedError();
 }
 
 class App extends StatelessWidget {
