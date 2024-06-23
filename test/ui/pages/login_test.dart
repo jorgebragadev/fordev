@@ -14,7 +14,7 @@ void main() {
   late StreamController<String?> emailErrorController;
   late StreamController<String?> passwordErrorController;
   late StreamController<bool> isFormValidController;
-  
+  late StreamController<bool> isLoadingController;
 
   Future<void> loadPage(WidgetTester tester) async {
     presenter = LoginPresenterSpy();
@@ -26,10 +26,14 @@ void main() {
         StreamController<String?>(); // Defina o tipo do StreamController
     when(() => presenter.passwordErrorStream)
         .thenAnswer((_) => passwordErrorController.stream);
-        
-    isFormValidController = StreamController<bool>(); 
+
+    isLoadingController = StreamController<bool>();
+    when(() => presenter.isLoadingStream)
+        .thenAnswer((_) => isLoadingController.stream);
+
+      isFormValidController = StreamController<bool>();
     when(() => presenter.isFormValidStream)
-    .thenAnswer((_) => isFormValidController.stream);
+        .thenAnswer((_) => isFormValidController.stream);
 
 
     final loginPage = MaterialApp(home: LoginPage(presenter));
@@ -48,6 +52,7 @@ void main() {
     emailErrorController.close();
     passwordErrorController.close();
     isFormValidController.close();
+    isLoadingController.close();
   });
 
   testWidgets('Should load with correct initial state',
@@ -129,7 +134,7 @@ void main() {
     expect(find.text('any error'), findsOneWidget);
   });
 
-   testWidgets('Should present no error if password is valid',
+  testWidgets('Should present no error if password is valid',
       (WidgetTester tester) async {
     await loadPage(tester);
 
@@ -162,24 +167,22 @@ void main() {
     isFormValidController.add(true);
     await tester.pump();
 
-        final button = tester.widget<ElevatedButton>(find.byType(ElevatedButton));
+    final button = tester.widget<ElevatedButton>(find.byType(ElevatedButton));
     expect(button.onPressed, isNotNull);
-
   });
 
-   testWidgets('Should enable button if form is valid',
+  testWidgets('Should enable button if form is valid',
       (WidgetTester tester) async {
     await loadPage(tester);
 
     isFormValidController.add(false);
     await tester.pump();
 
-        final button = tester.widget<ElevatedButton>(find.byType(ElevatedButton));
+    final button = tester.widget<ElevatedButton>(find.byType(ElevatedButton));
     expect(button.onPressed, null);
-
   });
 
-   testWidgets('Should call authentication on from submit',
+  testWidgets('Should call authentication on from submit',
       (WidgetTester tester) async {
     await loadPage(tester);
 
@@ -189,6 +192,14 @@ void main() {
     await tester.pump();
 
     verify(() => presenter.auth()).called(1);
+  });
 
+  testWidgets('Should present loading', (WidgetTester tester) async {
+    await loadPage(tester);
+
+    isLoadingController.add(true);
+    await tester.pump();
+
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
   });
 }
