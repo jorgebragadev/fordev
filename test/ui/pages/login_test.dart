@@ -15,8 +15,10 @@ void main() {
 
   Future<void> loadPage(WidgetTester tester) async {
     presenter = LoginPresenterSpy();
-    emailErrorController = StreamController<String?>(); // Defina o tipo do StreamController
-    when(() => presenter.emailErrorStream).thenAnswer((_) => emailErrorController.stream);
+    emailErrorController =
+        StreamController<String?>(); // Defina o tipo do StreamController
+    when(() => presenter.emailErrorStream)
+        .thenAnswer((_) => emailErrorController.stream);
 
     final loginPage = MaterialApp(home: LoginPage(presenter));
     await tester.pumpWidget(loginPage);
@@ -24,15 +26,18 @@ void main() {
 
   setUp(() {
     presenter = LoginPresenterSpy();
-    when(() => presenter.validateEmail(any())).thenReturn(null); // Configura o mock
-    when(() => presenter.validatePassword(any())).thenReturn(null); // Configura o mock
+    when(() => presenter.validateEmail(any()))
+        .thenReturn(null); // Configura o mock
+    when(() => presenter.validatePassword(any()))
+        .thenReturn(null); // Configura o mock
   });
 
   tearDown(() {
     emailErrorController.close();
   });
 
-  testWidgets('Should load with correct initial state', (WidgetTester tester) async {
+  testWidgets('Should load with correct initial state',
+      (WidgetTester tester) async {
     await loadPage(tester);
 
     final emailTextChildren = find.descendant(
@@ -53,22 +58,50 @@ void main() {
     expect(button.onPressed, null);
   });
 
-  testWidgets('Should call validate with correct values', (WidgetTester tester) async {
+  testWidgets('Should call validate with correct values',
+      (WidgetTester tester) async {
     await loadPage(tester);
 
     final email = faker.internet.email();
     await tester.enterText(find.bySemanticsLabel('Email'), email);
-    await tester.pump(); // Adicione isto para garantir que todas as interações assíncronas sejam processadas
+    await tester.pump();
 
-    verify(() => presenter.validateEmail(email)).called(1); // Verifique se o método foi chamado exatamente uma vez
+    verify(() => presenter.validateEmail(email)).called(1);
   });
 
-  testWidgets('Should present error if email is invalid', (WidgetTester tester) async {
+  testWidgets('Should present error if email is invalid',
+      (WidgetTester tester) async {
     await loadPage(tester);
 
     emailErrorController.add('any error');
-    await tester.pump(); // Aguarde a atualização do StreamBuilder
+    await tester.pump();
 
-    expect(find.text('any error'), findsOneWidget); // Verifique se o texto de erro é encontrado
+    expect(find.text('any error'), findsOneWidget);
+  });
+
+  testWidgets('Should present no error if email is valid',
+      (WidgetTester tester) async {
+    await loadPage(tester);
+
+    emailErrorController.add(null);
+    await tester.pump();
+
+    expect(
+        find.descendant(
+            of: find.bySemanticsLabel('Email'), matching: find.byType(Text)),
+        findsOneWidget);
+  });
+
+  testWidgets('Should present no error if email is valid',
+      (WidgetTester tester) async {
+    await loadPage(tester);
+
+    emailErrorController.add('');
+    await tester.pump();
+
+    expect(
+        find.descendant(
+            of: find.bySemanticsLabel('Email'), matching: find.byType(Text)),
+        findsOneWidget);
   });
 }
