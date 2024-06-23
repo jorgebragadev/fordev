@@ -32,7 +32,9 @@ class LoginPage extends StatelessWidget {
                 ),
               );
             } else {
-              Navigator.of(context).pop();
+              if (Navigator.canPop(context)) {
+                Navigator.of(context).pop();
+              }
             }
           });
           return SingleChildScrollView(
