@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fordev/ui/pages/login_page.dart';
+import 'package:fordev/ui/pages/login/login_page.dart';
+import 'package:fordev/ui/pages/login/login_presenter.dart';
 
 class App extends StatelessWidget {
   @override
@@ -9,6 +10,8 @@ class App extends StatelessWidget {
     const primaryColor = Color.fromRGBO(136, 14, 79, 1);
     const primaryColorDark = Color.fromRGBO(96, 0, 39, 1);
     const primaryColorLight = Color.fromRGBO(188, 71, 123, 1);
+
+    final LoginPresenter presenter = FakeLoginPresenter();
 
     return MaterialApp(
       title: '4Dev',
@@ -52,7 +55,23 @@ class App extends StatelessWidget {
           ),
         ),
       ),
-      home: const LoginPage(),
+      home: LoginPage(presenter), // Passe o presenter para o LoginPage
     );
   }
+}
+
+class FakeLoginPresenter extends LoginPresenter {
+  @override
+  void validateEmail(String email) {
+    // Implementação de exemplo
+  }
+
+  @override
+  void validatePassword(String password) {
+    // Implementação de exemplo
+  }
+}
+
+void main() {
+  runApp(App());
 }
