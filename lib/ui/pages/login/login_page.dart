@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fordev/ui/components/headlineLarge.dart';
 import 'package:fordev/ui/components/login_header.dart';
+import 'package:fordev/ui/components/spinner_dialog.dart';
 import 'package:fordev/ui/pages/login/login_presenter.dart';
 
 class LoginPage extends StatefulWidget {
@@ -18,6 +19,7 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
     widget.presenter.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,26 +27,9 @@ class _LoginPageState extends State<LoginPage> {
         builder: (context) {
           widget.presenter.isLoadingStream.listen((isLoading) {
             if (isLoading) {
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (_) => SimpleDialog(
-                  children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        CircularProgressIndicator(),
-                        SizedBox(height: 10),
-                        Text('Aguarde...', textAlign: TextAlign.center),
-                      ],
-                    ),
-                  ],
-                ),
-              );
+              showLoading(context);
             } else {
-              if (Navigator.canPop(context)) {
-                Navigator.of(context).pop();
-              }
+              hideLoading(context);
             }
           });
           widget.presenter.mainErrorStream.listen((error) {
