@@ -30,7 +30,6 @@ class FakeLoginPresenter extends LoginPresenter {
     _mainErrorController.close();
     _isFormValidStream.close();
     _isFormValidController.close();
-    
   }
 
   @override
@@ -41,10 +40,10 @@ class FakeLoginPresenter extends LoginPresenter {
 
   @override
   void auth() {}
-  
+
   @override
   Stream<bool> get isLoadingStream => throw UnimplementedError();
-  
+
   @override
   Stream<String?> get mainErrorStream => throw UnimplementedError();
 }
