@@ -7,11 +7,11 @@ import 'dart:async';
 class FakeLoginPresenter extends LoginPresenter {
   final _emailErrorController = StreamController<String?>.broadcast();
   final _passwordErrorController = StreamController<String?>.broadcast();
+  final _isFormValidStream = StreamController<bool>.broadcast();
 
   @override
   Stream<String?> get emailErrorStream => _emailErrorController.stream;
 
- 
   @override
   void validateEmail(String email) {
     // Implementação de exemplo
@@ -25,11 +25,15 @@ class FakeLoginPresenter extends LoginPresenter {
   void dispose() {
     _emailErrorController.close();
     _passwordErrorController.close();
+    _isFormValidStream.close();
   }
-    
+
   @override
-  // TODO: implement passwordErrorStream
   Stream<String?> get passwordErrorStream => throw UnimplementedError();
+
+  @override
+  // TODO: implement isFormValidStream
+  Stream<bool> get isFormValidStream => throw UnimplementedError();
 }
 
 class App extends StatelessWidget {
