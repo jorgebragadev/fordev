@@ -19,16 +19,13 @@ void main() {
 
   Future<void> loadPage(WidgetTester tester) async {
     presenter = LoginPresenterSpy();
-    emailErrorController =
-        StreamController<String?>(); 
+    emailErrorController = StreamController<String?>();
     when(() => presenter.emailErrorStream)
         .thenAnswer((_) => emailErrorController.stream);
-    passwordErrorController =
-        StreamController<String?>(); 
+    passwordErrorController = StreamController<String?>();
     when(() => presenter.passwordErrorStream)
         .thenAnswer((_) => passwordErrorController.stream);
-    mainErrorController =
-        StreamController<String?>(); 
+    mainErrorController = StreamController<String?>();
     when(() => presenter.mainErrorStream)
         .thenAnswer((_) => mainErrorController.stream);
 
@@ -228,5 +225,13 @@ void main() {
     await tester.pump();
 
     expect(find.text('main error'), findsOneWidget);
+  });
+
+  testWidgets('Should close streams on dispose', (WidgetTester tester) async {
+    await loadPage(tester);
+
+    addTearDown(() {
+      verify(() => presenter.dispose()).called(1);
+    });
   });
 }
