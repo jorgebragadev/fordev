@@ -42,7 +42,7 @@ class LoginPage extends StatelessWidget {
                       ),
                     ),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: null,
                       child: const Text('ENTRAR'),
                     ),
                     TextButton.icon(
