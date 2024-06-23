@@ -2,6 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fordev/ui/pages/login/login_page.dart';
 import 'package:fordev/ui/pages/login/login_presenter.dart';
+import 'dart:async';
+
+class FakeLoginPresenter extends LoginPresenter {
+  final _emailErrorController = StreamController<String?>.broadcast();
+
+  @override
+  Stream<String?> get emailErrorStream => _emailErrorController.stream;
+
+  @override
+  void validateEmail(String email) {
+    // Implementação de exemplo
+  }
+
+  @override
+  void validatePassword(String password) {
+    // Implementação de exemplo
+  }
+
+  void dispose() {
+    _emailErrorController.close();
+  }
+}
 
 class App extends StatelessWidget {
   @override
@@ -57,18 +79,6 @@ class App extends StatelessWidget {
       ),
       home: LoginPage(presenter), // Passe o presenter para o LoginPage
     );
-  }
-}
-
-class FakeLoginPresenter extends LoginPresenter {
-  @override
-  void validateEmail(String email) {
-    // Implementação de exemplo
-  }
-
-  @override
-  void validatePassword(String password) {
-    // Implementação de exemplo
   }
 }
 
