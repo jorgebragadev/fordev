@@ -8,19 +8,19 @@ class FakeLoginPresenter extends LoginPresenter {
   final _emailErrorController = StreamController<String?>.broadcast();
   final _passwordErrorController = StreamController<String?>.broadcast();
   final _isFormValidStream = StreamController<bool>.broadcast();
+  final _isFormValidController = StreamController<bool>.broadcast();
 
   @override
   Stream<String?> get emailErrorStream => _emailErrorController.stream;
 
   @override
-  void validateEmail(String email) {
-    // Implementação de exemplo
-  }
+  void validateEmail(String email) {}
 
   @override
-  void validatePassword(String password) {
-    // Implementação de exemplo
-  }
+  void validatePassword(String password) {}
+
+  @override
+  void aut() {}
 
   void dispose() {
     _emailErrorController.close();
@@ -32,8 +32,10 @@ class FakeLoginPresenter extends LoginPresenter {
   Stream<String?> get passwordErrorStream => throw UnimplementedError();
 
   @override
-  // TODO: implement isFormValidStream
   Stream<bool> get isFormValidStream => throw UnimplementedError();
+
+  @override
+  void auth() {}
 }
 
 class App extends StatelessWidget {
