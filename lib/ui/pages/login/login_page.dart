@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fordev/ui/components/error_message.dart';
 import 'package:fordev/ui/components/headlineLarge.dart';
 import 'package:fordev/ui/components/login_header.dart';
 import 'package:fordev/ui/components/spinner_dialog.dart';
@@ -34,12 +35,7 @@ class _LoginPageState extends State<LoginPage> {
           });
           widget.presenter.mainErrorStream.listen((error) {
             if (error != null) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  backgroundColor: Colors.red[900],
-                  content: Text(error, textAlign: TextAlign.center),
-                ),
-              );
+              showErrorMessage(context, error);
             }
           });
 
