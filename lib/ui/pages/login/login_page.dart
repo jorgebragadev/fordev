@@ -3,7 +3,11 @@ import 'package:fordev/ui/components/error_message.dart';
 import 'package:fordev/ui/components/headlineLarge.dart';
 import 'package:fordev/ui/components/login_header.dart';
 import 'package:fordev/ui/components/spinner_dialog.dart';
+import 'package:fordev/ui/pages/login/components/email_input.dart';
+import 'package:fordev/ui/pages/login/components/login_button.dart';
+import 'package:fordev/ui/pages/login/components/password_input.dart';
 import 'package:fordev/ui/pages/login/login_presenter.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   final LoginPresenter presenter;
@@ -49,63 +53,24 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(32),
-                  child: Form(
-                    child: Column(
-                      children: [
-                        StreamBuilder<String?>(
-                          stream: widget.presenter.emailErrorStream,
-                          builder: (context, snapshot) {
-                            return TextFormField(
-                              decoration: InputDecoration(
-                                labelText: 'Email',
-                                icon: Icon(Icons.email,
-                                    color: Theme.of(context).primaryColorLight),
-                                errorText: snapshot.data?.isEmpty == true
-                                    ? null
-                                    : snapshot.data,
-                              ),
-                              keyboardType: TextInputType.emailAddress,
-                              onChanged: widget.presenter.validateEmail,
-                            );
-                          },
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8, bottom: 32),
-                          child: StreamBuilder<String?>(
-                              stream: widget.presenter.passwordErrorStream,
-                              builder: (context, snapshot) {
-                                return TextFormField(
-                                  decoration: InputDecoration(
-                                    labelText: 'Password',
-                                    icon: Icon(Icons.lock,
-                                        color: Theme.of(context)
-                                            .primaryColorLight),
-                                    errorText: snapshot.data?.isEmpty == true
-                                        ? null
-                                        : snapshot.data,
-                                  ),
-                                  obscureText: true,
-                                  onChanged: widget.presenter.validatePassword,
-                                );
-                              }),
-                        ),
-                        StreamBuilder<bool>(
-                            stream: widget.presenter.isFormValidStream,
-                            builder: (context, snapshot) {
-                              return ElevatedButton(
-                                onPressed: snapshot.data == true
-                                    ? widget.presenter.auth
-                                    : null,
-                                child: const Text('ENTRAR'),
-                              );
-                            }),
-                        TextButton.icon(
-                          onPressed: () {},
-                          icon: Icon(Icons.person,
-                              color: Theme.of(context).primaryColorLight),
-                          label: const Text('Criar Conta'),
-                        ),
-                      ],
+                  child: Provider<LoginPresenter>.value(
+                    value: widget.presenter,
+                    child: Form(
+                      child: Column(
+                        children: [
+                          const EmailInput(),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8, bottom: 32),
+                            child: const PasswordInput(),
+                          ),
+                          const LoginButton(),
+                          TextButton.icon(
+                            onPressed: () {},
+                            icon: Icon(Icons.person, color: Theme.of(context).primaryColorLight),
+                            label: const Text('Criar Conta'),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 )
@@ -117,3 +82,5 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
+
+
